@@ -9,11 +9,7 @@ image = cv2.imread(
 
 # Resize the image - change width to 500
 
-scale_percent = 100 # percent of original size
-width = int(image.shape[1] * scale_percent / 100)
-height = int(image.shape[0] * scale_percent / 100)
-dim = (width, height)
-image = cv2.resize(image, dim, interpolation = cv2.INTER_AREA)
+
 
 # Display the original image
 cv2.imshow("Original Image", image)
@@ -31,11 +27,10 @@ edged = cv2.Canny(gray, 170, 200)
 cv2.imshow("4 - Canny Edges", edged)
 
 # Find contours based on Edges
-(new, cnts, _) = cv2.findContours(
-    edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+# (new, cnts, _) = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) #pyyhon3
 
+cnts, hierarchy = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-# image = cv2.drawContours(image, cnts, -1, (0,255,0), 3)
 
 # sort contours based on their area keeping minimum required area as '30' (anything smaller than this will not be considered)
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:30]
@@ -45,14 +40,18 @@ NumberPlateCnt = None  # we currently have no Number plate contour
 
 count = 0
 for c in cnts:
+    x,y,w,h = cv2.boundingRect(c)
     peri = cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
     if len(approx) == 4:  # Select the contour with 4 corners
         NumberPlateCnt = approx  # This is our approx Number Plate Contour
+
+        new_img=image[y:y+h,x:x+w]
+        cv2.imwrite("valid/"+str(count) + '.png', new_img)
+        cv2.imshow("Final Image With Number Plate Detected", new_img)
         break
 
 
-mask = np.zeros_like(image) # Create mask where white is what we want, black otherwise
 
 
 # Drawing the selected contour on the original image
@@ -62,7 +61,6 @@ cv2.drawContours(image,[NumberPlateCnt] , -1, (0, 255, 0), 3)
 
 
 cv2.imshow("Final Image With Number Plate Detected", image)
-
 
 
 cv2.waitKey(0)  # Wait for user input before closing the images displayed
