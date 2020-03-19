@@ -123,10 +123,10 @@ def detect_chart(img, searcher):
 
 
 # Read the image file
-image = cv2.imread('images/bien_so_xe_dep_5-500.jpg')
-
+image = cv2.imread('images/89931926_206247237324541_4638874939527528448_n.jpg')
 
 # Resize the image - change width to 500
+image = cv2.resize(image, (800, 800), interpolation=cv2.INTER_AREA)
 
 
 # Display the original image
@@ -149,7 +149,8 @@ edged = cv2.Canny(gray, 170, 200)
                              cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)  # pyyhon3
 
 # cnts, hierarchy = cv2.findContours(edged.copy(), cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE) #python2
-
+cv2.imshow("22",gray)
+cv2.waitKey(0)  # Wait for user input before closing the images displayed
 
 # sort contours based on their area keeping minimum required area as '30' (anything smaller than this will not be considered)
 cnts = sorted(cnts, key=cv2.contourArea, reverse=True)[:30]
@@ -163,6 +164,8 @@ for c in cnts:
     rect = cv2.minAreaRect(c)
     peri = cv2.arcLength(c, True)
     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
+    cv2.rectangle(image, (x, y), (x + w, y + h), (90, 0, 255), 1)
+
     if len(approx) == 4:  # Select the contour with 4 corners
         NumberPlateCnt = approx  # This is our approx Number Plate Contour
 
@@ -178,6 +181,8 @@ for c in cnts:
         img_crop = detect_chart(img_crop, searcher)
         img_crop = detect_chart(img_crop, searcher)
         img_crop = detect_chart(img_crop, searcher)
+
+
         break
 
 
@@ -188,7 +193,7 @@ print(NumberPlateCnt)
 cv2.drawContours(image, [NumberPlateCnt], -1, (0, 255, 0), 3)
 
 
-# cv2.imshow("Final Image With Number Plate Detected", image)
+cv2.imshow("Final Image With Number Plate Detected", image)
 
 
 cv2.waitKey(0)  # Wait for user input before closing the images displayed
