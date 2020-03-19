@@ -70,7 +70,6 @@ def segmentation(searcher, img0):
     
 
     ctrs.sort(key=lambda x:get_contour_precedence(x, img.shape[1]))
-    platesmatrix= []
     for i, ctr in enumerate(ctrs):
         # Get bounding box
 
@@ -107,7 +106,7 @@ def segmentation(searcher, img0):
             print ("\t%d. %s : %.3f" % (1, imageName, score))
     print ("plates: " +plates)
     cv2.imshow('marked areas', img)
-    print(platesmatrix)
+ 
     cv2.waitKey(0)
     return
 
@@ -166,7 +165,7 @@ for c in cnts:
     approx = cv2.approxPolyDP(c, 0.02 * peri, True)
     cv2.rectangle(image, (x, y), (x + w, y + h), (90, 0, 255), 1)
 
-    if len(approx) == 4:  # Select the contour with 4 corners
+    if len(approx) > 1:  # Select the contour with 4 corners
         NumberPlateCnt = approx  # This is our approx Number Plate Contour
 
         # Extract subregion
@@ -177,20 +176,29 @@ for c in cnts:
         searcher = Searcher(model)
         print('Model loaded. Predicting characters of number plate')
         # cv2.imshow("Final Image With Number Plate Detected", img_crop)
+        gray = cv2.cvtColor(img_crop, cv2.COLOR_BGR2GRAY)
+
+        desc = RGBHistogram([8, 8, 8])
+        queryFeatures = desc.describe(gray)
+
+        # load the index perform the search
+        results = searcher.search(queryFeatures)
+        (score, imageName) = results[0]
+        print ("\t%d. %s : %.3f" % (1, imageName, score))
+
         img_crop = detect_chart(img_crop, searcher)
         img_crop = detect_chart(img_crop, searcher)
         img_crop = detect_chart(img_crop, searcher)
         img_crop = detect_chart(img_crop, searcher)
 
 
-        break
+        # break
 
 
 # Drawing the selected contour on the original image
 print(NumberPlateCnt)
 
 
-cv2.drawContours(image, [NumberPlateCnt], -1, (0, 255, 0), 3)
 
 
 cv2.imshow("Final Image With Number Plate Detected", image)
