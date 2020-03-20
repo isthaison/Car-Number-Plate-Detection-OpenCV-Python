@@ -54,15 +54,15 @@ def read_training_data(training_directory):
             c=c+1
 
 
-     
-           
+
+
     return
 
 # current_dir = os.path.dirname(os.path.realpath(__file__))
 #
 # training_dataset_dir = os.path.join(current_dir, 'train')
 print('reading data')
-training_dataset_dir = 'train20X20/'
+training_dataset_dir = 'traintext/'
 read_training_data(training_dataset_dir)
 print('reading data completed')
 

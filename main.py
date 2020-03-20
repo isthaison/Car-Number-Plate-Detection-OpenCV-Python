@@ -42,9 +42,7 @@ def segmentation(searcher, img0):
     files = glob.glob('tmp/*')
     for f in files:
         os.remove(f)
-    files = glob.glob('valid/*')
-    for f in files:
-        os.remove(f)
+   
     # grayscale
 
     # height, width, number of channels in image
@@ -113,10 +111,13 @@ def segmentation(searcher, img0):
 
 
 def detect_chart(img, searcher):
+    files = glob.glob('valid/*')
+    for f in files:
+        os.remove(f)
     now = datetime.now()
     dt_string = now.strftime("%Y%m%d%H%M%S")
     img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-    cv2.imwrite("valid/"+dt_string + "_" + str(count) + '.png', img)
+    cv2.imwrite("valid/"+dt_string+ '.png', img)
 
     segmentation(searcher, img)
     return img
